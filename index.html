@@ -5,164 +5,381 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Chloe Vocabulary Game</title>
   <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      background: linear-gradient(-45deg, #ff7eb3, #65d6ce, #7afcff, #feff9c);
-      background-size: 400% 400%;
-      animation: gradient 12s ease infinite;
-      color: #fff;
+    :root{
+      --bg1:#ff9a9e; --bg2:#fad0c4; --bg3:#a1c4fd; --bg4:#c2e9fb;
+      --card-bg: rgba(255,255,255,0.08);
+      --accent: #87ceeb;
+      --glass: rgba(255,255,255,0.06);
     }
-    @keyframes gradient {
-      0% {background-position: 0% 50%;}
-      50% {background-position: 100% 50%;}
-      100% {background-position: 0% 50%;}
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      background: linear-gradient(-45deg,var(--bg1),var(--bg2),var(--bg3),var(--bg4));
+      background-size:400% 400%;
+      animation: bgAnim 14s ease infinite;
+      color:#fff;
+      padding:20px;
     }
-    .quiz-box {
-      background: rgba(255,255,255,0.08);
+    @keyframes bgAnim{
+      0%{background-position:0% 50%}
+      50%{background-position:100% 50%}
+      100%{background-position:0% 50%}
+    }
+
+    .container{
+      width:760px;
+      max-width:100%;
+      display:grid;
+      grid-template-columns: 1fr 360px;
+      gap:20px;
+      align-items:start;
+    }
+
+    .card{
+      background: var(--card-bg);
       backdrop-filter: blur(12px);
-      padding: 20px;
-      border-radius: 18px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-      text-align: center;
-      width: 380px;
-      transition: transform 0.3s;
+      padding:22px;
+      border-radius:14px;
+      box-shadow: 0 12px 40px rgba(10,10,20,0.35);
     }
-    .quiz-box:hover { transform: scale(1.02); }
-    h1 { font-size: 24px; margin-bottom: 15px; }
-    #question { font-size: 20px; margin-bottom: 15px; }
-    .options { display: flex; flex-direction: column; gap: 10px; }
-    button {
-      padding: 10px;
-      border: none;
-      border-radius: 10px;
-      background: #ffffff33;
-      color: #fff;
-      font-weight: bold;
-      cursor: pointer;
-      transition: 0.25s;
+
+    .start-card{display:flex;flex-direction:column;gap:12px;align-items:center;justify-content:center}
+    .title{
+      font-size:22px;font-weight:700;text-align:center;
+      text-shadow:0 6px 18px rgba(0,0,0,0.18);
     }
-    button:hover { background: #ffffff55; transform: scale(1.05); }
-    #score { margin-top: 20px; font-size: 18px; font-weight: bold; }
-    #restart { margin-top: 15px; display: none; background: #00ffae99; }
-    input[type="text"] {
-      padding: 8px;
-      border-radius: 8px;
-      border: none;
-      width: 80%;
-      text-align: center;
+    input[type="text"]{
+      padding:10px 12px;border-radius:10px;border:none;outline:none;
+      width:100%;max-width:320px;font-size:16px;background:transparent;border:1px solid rgba(255,255,255,0.08);color:inherit;
+    }
+    button.primary{
+      padding:10px 16px;border-radius:10px;border:none;background:var(--accent);color:#07203a;font-weight:700;cursor:pointer;
+      box-shadow:0 6px 18px rgba(0,0,0,0.2);
+    }
+    button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:inherit;padding:8px 12px;border-radius:8px;cursor:pointer}
+
+    /* quiz area */
+    .quiz-main{display:flex;flex-direction:column;gap:14px}
+    .header-row{display:flex;justify-content:space-between;align-items:center;gap:12px}
+    .progress{font-size:14px;color:#dff3ff}
+    .question-box{background:var(--glass);padding:16px;border-radius:12px;min-height:120px;display:flex;flex-direction:column;gap:10px}
+    .question-text{font-size:18px;font-weight:700}
+    .options{display:flex;flex-direction:column;gap:10px}
+    .option-btn{padding:10px 14px;border-radius:10px;border:none;background:rgba(255,255,255,0.06);color:#fff;cursor:pointer;text-align:left;font-weight:600}
+    .option-btn:hover{transform:scale(1.02);background:rgba(255,255,255,0.12)}
+    .small-muted{font-size:13px;color:rgba(255,255,255,0.75)}
+
+    .side-card{display:flex;flex-direction:column;gap:12px;align-items:stretch}
+    .side-header{font-weight:700;font-size:16px}
+    .score-bubble{background:rgba(255,255,255,0.03);padding:12px;border-radius:10px;text-align:center;font-size:20px;font-weight:700}
+    .progress-bar{height:10px;background:rgba(255,255,255,0.05);border-radius:8px;overflow:hidden}
+    .progress-fill{height:100%;width:0%;background:linear-gradient(90deg,#50e3c2,#5aa9ff)}
+
+    .textbox-answer{padding:10px;border-radius:8px;border:none;width:100%;font-size:16px;background:transparent;border:1px solid rgba(255,255,255,0.06);color:inherit}
+
+    .final-card{display:flex;flex-direction:column;gap:12px;align-items:center;justify-content:center;padding:16px;border-radius:12px;background:rgba(0,0,0,0.12)}
+    .restart{padding:10px 14px;border-radius:10px;border:none;background:#ff6b6b;color:#fff;cursor:pointer;font-weight:700}
+
+    footer{grid-column:1 / -1;text-align:center;margin-top:8px;color:rgba(255,255,255,0.8);font-size:13px}
+
+    @media (max-width:880px){
+      .container{grid-template-columns:1fr; padding-bottom:40px}
+      .side-card{order:2}
     }
   </style>
 </head>
 <body>
-  <div class="quiz-box">
-    <h1>Chloe Vocabulary Game</h1>
-    <div id="question">Loading...</div>
-    <div class="options" id="options"></div>
-    <div id="score"></div>
-    <button id="restart">Restart Game</button>
+  <div class="container">
+    <!-- LEFT: start screen or quiz -->
+    <div class="card" id="leftCard">
+      <!-- Start screen -->
+      <div id="startScreen" class="start-card">
+        <div class="title">Chloe Vocabulary Game</div>
+        <div class="small-muted">Enter your username to begin. 40 questions: 30 multiple-choice + 10 text answers.</div>
+        <input id="usernameInput" type="text" placeholder="Your username..." />
+        <div style="display:flex;gap:10px;margin-top:8px">
+          <button class="primary" id="startBtn">Start Game</button>
+          <button class="ghost" id="howBtn">How to play</button>
+        </div>
+      </div>
+
+      <!-- Quiz UI -->
+      <div id="quizUI" style="display:none">
+        <div class="quiz-main">
+          <div class="header-row">
+            <div>
+              <div style="font-size:13px;color:#dff3ff" id="welcomeLine">Welcome</div>
+              <div class="small-muted" id="subLine">Answer the questions below</div>
+            </div>
+            <div class="progress" id="progressText">1 / 40</div>
+          </div>
+
+          <div class="question-box">
+            <div class="question-text" id="questionText">Question text</div>
+            <div class="options" id="optionsWrap"></div>
+            <div id="textInputWrap" style="display:none">
+              <input id="textAnswer" class="textbox-answer" placeholder="Type your answer and press Submit" />
+              <div style="display:flex;gap:8px;margin-top:8px">
+                <button class="primary" id="submitTextBtn">Submit</button>
+                <button class="ghost" id="skipTextBtn">Skip</button>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div class="small-muted" id="hintArea"></div>
+            <div>
+              <button class="ghost" id="nextBtn" style="display:none">Next ▶</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: side panel -->
+    <div class="card side-card">
+      <div>
+        <div class="side-header">Score</div>
+        <div class="score-bubble" id="scoreBubble">0</div>
+      </div>
+
+      <div>
+        <div class="side-header">Progress</div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      </div>
+
+      <div>
+        <div class="side-header">Quick Info</div>
+        <div class="small-muted">There are <strong>40</strong> questions. The last 10 are text answers (type them).</div>
+      </div>
+
+      <div id="finalArea" style="display:none" class="final-card">
+        <div id="finalTitle" style="font-size:18px;font-weight:800">Game Over</div>
+        <div id="finalMsg" style="font-size:15px">Your result</div>
+        <button class="restart" id="restartBtn">Restart</button>
+      </div>
+    </div>
+
+    <footer>Created for you — play, learn, and tease Chloe 😉</footer>
   </div>
 
+  <!-- confetti lib -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+
   <script>
+    // QUESTIONS: 30 MC (index 0..29), 10 text (index 30..39)
     const questions = [
-      { q: "What’s the synonym of 'happy'?", options: ["Sad", "Joyful", "Angry", "Tired"], answer: 1 },
-      { q: "Capital of France?", options: ["Berlin", "Paris", "London", "Rome"], answer: 1 },
-      { q: "Which planet is known as the Red Planet?", options: ["Mars", "Jupiter", "Venus", "Mercury"], answer: 0 },
-      { q: "What does HTML stand for?", options: ["Hyper Text Makeup Language", "Hyper Text Markup Language", "High Text Marking Language", "Home Tool Markup Language"], answer: 1 },
-      { q: "Largest ocean on Earth?", options: ["Atlantic", "Indian", "Pacific", "Arctic"], answer: 2 },
-      { q: "Antonym of 'ancient'?", options: ["Old", "Modern", "Historic", "Ancestors"], answer: 1 },
-      { q: "How many continents are there?", options: ["5", "6", "7", "8"], answer: 2 },
-      { q: "Which is the smallest prime number?", options: ["0", "1", "2", "3"], answer: 2 },
-      { q: "Fastest land animal?", options: ["Cheetah", "Horse", "Tiger", "Falcon"], answer: 0 },
-      { q: "Who wrote 'Romeo and Juliet'?", options: ["Shakespeare", "Dickens", "Homer", "Hemingway"], answer: 0 },
-      { q: "Opposite of 'increase'?", options: ["Grow", "Rise", "Decrease", "Lift"], answer: 2 },
-      { q: "Largest mammal?", options: ["Elephant", "Blue Whale", "Giraffe", "Rhino"], answer: 1 },
-      { q: "Synonym of 'brave'?", options: ["Cowardly", "Fearless", "Weak", "Timid"], answer: 1 },
-      { q: "What gas do plants absorb?", options: ["Oxygen", "Carbon Dioxide", "Nitrogen", "Hydrogen"], answer: 1 },
-      { q: "Antonym of 'victory'?", options: ["Lose", "Failure", "Defeat", "Collapse"], answer: 2 },
-      { q: "How many sides does a hexagon have?", options: ["5", "6", "7", "8"], answer: 1 },
-      { q: "Synonym of 'rapid'?", options: ["Fast", "Slow", "Calm", "Gentle"], answer: 0 },
-      { q: "What is the freezing point of water (°C)?", options: ["-100", "0", "32", "100"], answer: 1 },
-      { q: "Opposite of 'rich'?", options: ["Poor", "Wealthy", "Loaded", "Prosperous"], answer: 0 },
-      { q: "Which language has the most native speakers?", options: ["English", "Spanish", "Mandarin Chinese", "Hindi"], answer: 2 },
-      { q: "Which organ pumps blood in the human body?", options: ["Brain", "Lungs", "Heart", "Kidney"], answer: 2 },
-      // Question 22 open-ended
-      { q: "Final Q (no choices): What’s the synonym of 'beautiful'?", type: "text", answer: ["pretty","lovely","gorgeous","attractive"] }
+      // 1-30 multiple choice
+      { q:"What’s the synonym of 'happy'?", options:["Sad","Joyful","Angry","Tired"], answer:1 },
+      { q:"Capital of France?", options:["Berlin","Paris","London","Rome"], answer:1 },
+      { q:"Which planet is known as the Red Planet?", options:["Mars","Jupiter","Venus","Mercury"], answer:0 },
+      { q:"What does HTML stand for?", options:["Hyper Text Makeup Language","Hyper Text Markup Language","High Text Marking Language","Home Tool Markup Language"], answer:1 },
+      { q:"Largest ocean on Earth?", options:["Atlantic","Indian","Pacific","Arctic"], answer:2 },
+      { q:"Antonym of 'ancient'?", options:["Old","Modern","Historic","Ancestors"], answer:1 },
+      { q:"How many continents are there?", options:["5","6","7","8"], answer:2 },
+      { q:"Which is the smallest prime number?", options:["0","1","2","3"], answer:2 },
+      { q:"Fastest land animal?", options:["Cheetah","Horse","Tiger","Falcon"], answer:0 },
+      { q:"Who wrote 'Romeo and Juliet'?", options:["Shakespeare","Dickens","Homer","Hemingway"], answer:0 },
+      { q:"Opposite of 'increase'?", options:["Grow","Rise","Decrease","Lift"], answer:2 },
+      { q:"Largest mammal?", options:["Elephant","Blue Whale","Giraffe","Rhino"], answer:1 },
+      { q:"Synonym of 'brave'?", options:["Cowardly","Fearless","Weak","Timid"], answer:1 },
+      { q:"What gas do plants absorb?", options:["Oxygen","Carbon Dioxide","Nitrogen","Hydrogen"], answer:1 },
+      { q:"Antonym of 'victory'?", options:["Lose","Failure","Defeat","Collapse"], answer:2 },
+      { q:"How many sides does a hexagon have?", options:["5","6","7","8"], answer:1 },
+      { q:"Synonym of 'rapid'?", options:["Fast","Slow","Calm","Gentle"], answer:0 },
+      { q:"What is the freezing point of water (°C)?", options:["-100","0","32","100"], answer:1 },
+      { q:"Opposite of 'rich'?", options:["Poor","Wealthy","Loaded","Prosperous"], answer:0 },
+      { q:"Which language has the most native speakers?", options:["English","Spanish","Mandarin Chinese","Hindi"], answer:2 },
+      { q:"Which organ pumps blood in the human body?", options:["Brain","Lungs","Heart","Kidney"], answer:2 },
+      { q:"What do bees produce?", options:["Milk","Honey","Silk","Wax"], answer:1 },
+      { q:"Which metal is liquid at room temperature?", options:["Gold","Iron","Mercury","Silver"], answer:2 },
+      { q:"Synonym for 'tiny'?", options:["Huge","Small","Gigantic","Massive"], answer:1 },
+      { q:"What color do you get mixing blue and yellow?", options:["Green","Purple","Orange","Brown"], answer:0 },
+      { q:"Opposite of 'visible'?", options:["Seen","Unseen","Invisible","Obvious"], answer:2 },
+      { q:"Who discovered penicillin?", options:["Alexander Fleming","Marie Curie","Isaac Newton","Albert Einstein"], answer:0 },
+      { q:"Which is a mammal?", options:["Shark","Dolphin","Octopus","Trout"], answer:1 },
+      { q:"What is H2O commonly called?", options:["Salt","Oxygen","Water","Hydrogen"], answer:2 },
+
+      // 31-40 open-ended (text)
+      { q:"(Text) What is the capital of Japan?", type:"text", answer:["tokyo"] },
+      { q:"(Text) Name a synonym of 'beautiful' (one word).", type:"text", answer:["pretty","lovely","gorgeous","attractive","stunning","charming","exquisite","radiant","graceful"] },
+      { q:"(Text) What do you call the study of living organisms? (one word)", type:"text", answer:["biology"] },
+      { q:"(Text) What is 12 × 12? (write the number)", type:"text", answer:["144"] },
+      { q:"(Text) Which element's chemical symbol is 'O'?", type:"text", answer:["oxygen"] },
+      { q:"(Text) What language do they speak in Brazil?", type:"text", answer:["portuguese"] },
+      { q:"(Text) What is the largest planet in our solar system?", type:"text", answer:["jupiter"] },
+      { q:"(Text) What device do you use to type characters on a computer? (one word)", type:"text", answer:["keyboard"] },
+      { q:"(Text) What is the opposite of 'dark' (one word)?", type:"text", answer:["light"] },
+      { q:"(Text) What sweet food is made by bees? (one word)", type:"text", answer:["honey"] }
     ];
 
-    let currentQ = 0;
+    // STATE
+    let username = "";
+    let index = 0;         // 0..39
     let score = 0;
-    const qEl = document.getElementById("question");
-    const optionsEl = document.getElementById("options");
-    const scoreEl = document.getElementById("score");
-    const restartBtn = document.getElementById("restart");
 
-    function showQuestion() {
-      let q = questions[currentQ];
-      qEl.textContent = q.q;
-      optionsEl.innerHTML = "";
+    // UI refs
+    const startScreen = document.getElementById('startScreen');
+    const quizUI = document.getElementById('quizUI');
+    const startBtn = document.getElementById('startBtn');
+    const howBtn = document.getElementById('howBtn');
+    const usernameInput = document.getElementById('usernameInput');
+    const welcomeLine = document.getElementById('welcomeLine');
+    const progressText = document.getElementById('progressText');
+    const questionText = document.getElementById('questionText');
+    const optionsWrap = document.getElementById('optionsWrap');
+    const textInputWrap = document.getElementById('textInputWrap');
+    const textAnswer = document.getElementById('textAnswer');
+    const submitTextBtn = document.getElementById('submitTextBtn');
+    const skipTextBtn = document.getElementById('skipTextBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const scoreBubble = document.getElementById('scoreBubble');
+    const progressFill = document.getElementById('progressFill');
+    const finalArea = document.getElementById('finalArea');
+    const finalTitle = document.getElementById('finalTitle');
+    const finalMsg = document.getElementById('finalMsg');
+    const restartBtn = document.getElementById('restartBtn');
+    const hintArea = document.getElementById('hintArea');
 
-      if (q.type === "text") {
-        let input = document.createElement("input");
-        input.type = "text";
-        input.id = "textAnswer";
-        input.placeholder = "Type your answer...";
-        optionsEl.appendChild(input);
+    // Start game
+    startBtn.addEventListener('click', ()=>{
+      const val = usernameInput.value.trim();
+      if(!val){ alert("Please enter a username to start!"); return; }
+      username = val;
+      startScreen.style.display = 'none';
+      quizUI.style.display = 'block';
+      welcomeLine.textContent = `Welcome, ${username}!`;
+      showQuestion();
+    });
 
-        let submitBtn = document.createElement("button");
-        submitBtn.textContent = "Submit";
-        submitBtn.onclick = () => {
-          let val = input.value.trim().toLowerCase();
-          if (q.answer.includes(val)) score++;
-          nextQuestion();
-        };
-        optionsEl.appendChild(submitBtn);
+    howBtn.addEventListener('click', ()=> {
+      alert("40 questions: 30 multiple-choice then 10 text answers. Type answers exactly or include the keyword. Press Start to begin.");
+    });
+
+    function showQuestion(){
+      hintArea.textContent = "";
+      nextBtn.style.display = 'none';
+      textInputWrap.style.display = 'none';
+      optionsWrap.style.display = 'block';
+      const q = questions[index];
+      progressText.textContent = `${index+1} / ${questions.length}`;
+      progressFill.style.width = `${((index)/questions.length)*100}%`;
+      questionText.textContent = q.q;
+      optionsWrap.innerHTML = '';
+
+      if(q.type === 'text'){
+        // show text input
+        optionsWrap.style.display = 'none';
+        textInputWrap.style.display = 'block';
+        textAnswer.value = "";
+        textAnswer.focus();
       } else {
+        // show choices
         q.options.forEach((opt, i) => {
-          let btn = document.createElement("button");
+          const btn = document.createElement('button');
+          btn.className = 'option-btn';
           btn.textContent = opt;
-          btn.onclick = () => {
-            if (i === q.answer) score++;
-            nextQuestion();
-          };
-          optionsEl.appendChild(btn);
+          btn.onclick = ()=> selectChoice(i);
+          optionsWrap.appendChild(btn);
         });
       }
     }
 
-    function nextQuestion() {
-      currentQ++;
-      if (currentQ < questions.length) {
-        showQuestion();
-      } else {
-        endGame();
+    function selectChoice(choiceIndex){
+      const q = questions[index];
+      // mark correct/incorrect
+      if(choiceIndex === q.answer){ score++; scoreBubble.textContent = score; }
+      // small feedback
+      hintArea.textContent = (choiceIndex === q.answer) ? "Correct! ✅" : "Oops! ❌";
+      // allow short delay then next
+      nextBtn.style.display = 'inline-block';
+      nextBtn.onclick = ()=> {
+        index++; 
+        if(index < questions.length) showQuestion(); else finishGame();
+      };
+    }
+
+    submitTextBtn.addEventListener('click', ()=> {
+      handleTextAnswer();
+    });
+    skipTextBtn.addEventListener('click', ()=> {
+      // skip, no score
+      hintArea.textContent = "Skipped.";
+      nextBtn.style.display = 'inline-block';
+      nextBtn.onclick = ()=> {
+        index++;
+        if(index < questions.length) showQuestion(); else finishGame();
+      };
+    });
+
+    // also allow Enter key for text answer
+    textAnswer.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter'){ e.preventDefault(); handleTextAnswer(); }
+    });
+
+    function handleTextAnswer(){
+      const q = questions[index];
+      const given = textAnswer.value.trim().toLowerCase();
+      if(!given){ alert("Type an answer or press Skip."); return; }
+      // check against answers array: accept exact match or contains keyword
+      let ok = false;
+      for(const a of q.answer){
+        const key = a.toLowerCase();
+        if(given === key) { ok = true; break; }
+        // allow 'contains' match for multi-word answers or partial
+        if(given.includes(key)) { ok = true; break; }
+        // also accept if user typed key + punctuation etc.
+      }
+      if(ok){ score++; scoreBubble.textContent = score; hintArea.textContent = "Correct! ✅"; }
+      else { hintArea.textContent = "Not quite. ❌"; }
+      nextBtn.style.display = 'inline-block';
+      nextBtn.onclick = ()=> {
+        index++;
+        if(index < questions.length) showQuestion(); else finishGame();
+      };
+    }
+
+    function finishGame(){
+      // progress fill full
+      progressFill.style.width = `100%`;
+      // hide quiz UI elements
+      document.getElementById('quizUI').style.display = 'none';
+      finalArea.style.display = 'flex';
+      const total = questions.length;
+      let reaction = "";
+      // adapt thresholds: top (>=90% = 36/40), mid (>=60% = 24/40)
+      if(score >= Math.ceil(total * 0.9)) reaction = "Legend! 🔥";
+      else if(score >= Math.ceil(total * 0.6)) reaction = "Not bad 😏";
+      else reaction = "Bruh 😂";
+      finalTitle.textContent = `${username}, your score: ${score}/${total}`;
+      finalMsg.textContent = reaction;
+
+      // confetti if decent or better
+      if(score >= Math.ceil(total * 0.6)){
+        confetti({ particleCount: 140, spread: 80, origin: { y: 0.6 } });
       }
     }
 
-    function endGame() {
-      qEl.textContent = "Game Over!";
-      optionsEl.innerHTML = "";
-      let msg = "";
-      if (score > 18) msg = "Legend! 🔥";
-      else if (score > 12) msg = "Not bad 😏";
-      else msg = "Bruh 😂";
-      scoreEl.textContent = `Your score: ${score}/${questions.length} → ${msg}`;
-      restartBtn.style.display = "inline-block";
-    }
+    restartBtn.addEventListener('click', ()=>{
+      // reset everything
+      index = 0; score = 0; username = "";
+      scoreBubble.textContent = "0";
+      progressFill.style.width = `0%`;
+      finalArea.style.display = 'none';
+      document.getElementById('quizUI').style.display = 'none';
+      startScreen.style.display = 'flex';
+      usernameInput.value = "";
+      hintArea.textContent = "";
+    });
 
-    restartBtn.onclick = () => {
-      currentQ = 0;
-      score = 0;
-      scoreEl.textContent = "";
-      restartBtn.style.display = "none";
-      showQuestion();
-    };
+    // OPTIONAL: allow skipping forward during MC questions if user wants 'fast mode'
+    // (not displayed by default) - kept simple for now.
 
-    showQuestion();
   </script>
 </body>
 </html>
